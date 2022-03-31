@@ -1,0 +1,273 @@
+{{#section "css"}}
+  <link
+    type="text/css"
+    rel="stylesheet"
+    href="../../public/stylesheets/courses.css"
+  />
+{{/section}}
+{{#section "js"}}
+  <script>
+    $( '.stars-inner' ).css( "width", function () { 
+      const rating = $( this).data( 'value' ); 
+      return `${ Math.round( rating * 20 ) }%`;
+      } );
+  </script>
+{{/section}}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+  <div class="collapse navbar-collapse d-flex" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      {{#each lcCategories}}
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="/courses/byCat/{{parent.CatID}}"
+            id="navbarDropdown"
+            role="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <b>{{parent.CatName}}</b>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {{#each children}}
+              <a
+                class="dropdown-item"
+                href="/courses/byCat/{{CatID}}"
+              >{{CatName}}</a>
+            {{/each}}
+          </div>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+</nav>
+
+<div class="card" style="margin-top: 20px">
+  <h5 class="card-header">
+    Hot Courses
+  </h5>
+  {{#if this.empty}}
+    <div class="card-body">
+      <p class="card-text">Không có dữ liệu.</p>
+    </div>
+  {{else}}
+    <form action="/cart/add" method="POST" id="frmAddItem">
+      <input type="hidden" name="id" id="txtProId" />
+      <input type="hidden" name="quantity" id="txtQ" />
+    </form>
+    <div class="card-body">
+      <div class="row">
+        {{#each this.hotCourses}}
+          <div class="col-sm-3 mb-3">
+            <a href="/course/{{CourseID}}">
+              <div class="card h-100">
+                <img
+                  src="/public/images/{{CourseID}}.jpg"
+                  class="card-img-top"
+                  alt="{{CourseName}}"
+                  title="{{CourseName}}"
+                  onerror='this.onerror = null; this.src="/public/images/{{CourseID}}.jpeg"'
+                />
+                <div class="card-body">
+                  <h6 class="card-title">{{CourseName}}</h6>
+                  <p class="card-text" style="color: black;">
+                    <a href="/courses/byCat/{{CatID}}">{{CatName}}</a>
+                  </p>
+                  <p class="card-text">
+                    {{Lecturers}}
+                  </p>
+                  
+                  <div
+                    class="d-flex justify-content"
+                    style="color:darkgoldenrod"
+                  >
+                    {{#if Rate}}
+                      <p style="margin-right: 5px"><strong>{{Rate}}</strong>
+                      </p>
+                    {{else}}
+                      <p style="margin-right: 5px"><strong>0</strong> </p>
+                    {{/if}}
+                    <div class="stars-outer">
+                      <div class="stars-inner" data-value="{{Rate}}"></div>
+                    </div>
+                    <p class="card-text" style="margin-left: 5px">
+                      ({{NumRate}}
+                      votes)
+                    </p>
+                  </div>
+                  {{#if PricePromotion}}
+                    <h5 class="card-title text-danger">{{format CurrentPrice}}đ
+                      <del style="color: black;">{{format Price}}<ins
+                        >đ</ins></del></h5>
+                  {{else}}
+                    <h5 class="card-title text-danger">{{format Price}}<ins
+                      >đ</ins></h5>
+                  {{/if}}
+                </div>
+                
+              </div>
+            </a>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  {{/if}}
+</div>
+
+<div class="card" style="margin-top: 20px">
+  <h5 class="card-header">
+    Hot Categories
+  </h5>
+  <div class="card-body">
+    <div
+      class="row"
+      style="display: flex; justify-content: center; align-items: center"
+    >
+      {{#each hotCat}}
+        <form method="get" action="/courses/byCat/{{CatID}}"><button
+            type="submit"
+            class="btn btn-primary"
+            style="width: 200px; margin: 5px 10px"
+          ><a style="color:gold" href="/courses/byCat/{{CatID}}"><b
+              >{{{CatName}}}</b></a></button></form>
+      {{/each}}
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top: 20px">
+  <h5 class="card-header">
+    Most Viewed Courses
+  </h5>
+
+  <form action="/cart/add" method="POST" id="frmAddItem">
+    <input type="hidden" name="id" id="txtProId" />
+    <input type="hidden" name="quantity" id="txtQ" />
+  </form>
+  <div class="card-body">
+    <div class="row">
+      {{#each this.top10views}}
+        <div class="col-sm-3 mb-3">
+          <a href="/course/{{CourseID}}">
+            <div class="card h-100">
+              <img
+                src="/public/images/{{CourseID}}.jpg"
+                class="card-img-top"
+                alt="{{CourseName}}"
+                title="{{CourseName}}"
+                onerror='this.onerror = null; this.src="/public/images/{{CourseID}}.jpeg"'
+              />
+              <div class="card-body">
+                <h6 class="card-title">{{CourseName}}</h6>
+                <p class="card-text" style="color: black;">
+                  <a href="/courses/byCat/{{CatID}}">{{CatName}}</a>
+                </p>
+                <p class="card-text">
+                  {{Lecturers}}
+                </p>
+                <div class="d-flex justify-content" style="color:darkgoldenrod">
+                  {{#if Rate}}
+                    <p style="margin-right: 5px"><strong>{{Rate}}</strong> </p>
+                  {{else}}
+                    <p style="margin-right: 5px"><strong>0</strong> </p>
+                  {{/if}}
+                  <div class="stars-outer">
+                    <div class="stars-inner" data-value="{{Rate}}"></div>
+                  </div>
+                  <p class="card-text" style="margin-left: 5px">
+                    ({{NumRate}}
+                    votes)
+                  </p>
+                </div>
+                {{#if PricePromotion}}
+                  <h5 class="card-title text-danger">{{format CurrentPrice}}đ
+                    <del style="color: black;">{{format Price}}<ins
+                      >đ</ins></del></h5>
+                {{else}}
+                  <h5 class="card-title text-danger">{{format Price}}<ins
+                    >đ</ins></h5>
+                {{/if}}
+              </div>
+            </div>
+          </a>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top: 20px">
+  <h5 class="card-header">
+    Newest Courses
+  </h5>
+  {{#if this.empty}}
+    <div class="card-body">
+      <p class="card-text">Không có dữ liệu.</p>
+    </div>
+  {{else}}
+    <form action="/cart/add" method="POST" id="frmAddItem">
+      <input type="hidden" name="id" id="txtProId" />
+      <input type="hidden" name="quantity" id="txtQ" />
+    </form>
+    <div class="card-body">
+      <div class="row">
+        {{#each this.top10new}}
+          <div class="col-sm-3 mb-3">
+            <a href="/course/{{CourseID}}">
+              <div class="card h-100">
+                <img
+                  src="/public/images/{{CourseID}}.jpg"
+                  class="card-img-top"
+                  alt="{{CourseName}}"
+                  title="{{CourseName}}"
+                  onerror='this.onerror = null; this.src="/public/images/{{CourseID}}.jpeg"'
+                />
+                <div class="card-body">
+                  <h6 class="card-title">{{CourseName}}</h6>
+                  <p class="card-text" style="color: black;">
+                    <a href="/courses/byCat/{{CatID}}">{{CatName}}</a>
+                  </p>
+                  <p class="card-text">
+                    {{Lecturers}}
+                  </p>
+                  
+                  <div
+                    class="d-flex justify-content"
+                    style="color:darkgoldenrod"
+                  >
+                    {{#if Rate}}
+                      <p style="margin-right: 5px"><strong>{{Rate}}</strong>
+                      </p>
+                    {{else}}
+                      <p style="margin-right: 5px"><strong>0</strong> </p>
+                    {{/if}}
+                    <div class="stars-outer">
+                      <div class="stars-inner" data-value="{{Rate}}"></div>
+                    </div>
+                    <p class="card-text" style="margin-left: 5px">
+                      ({{NumRate}}
+                      votes)
+                    </p>
+                  </div>
+                  {{#if PricePromotion}}
+                    <h5 class="card-title text-danger">{{format CurrentPrice}}đ
+                      <del style="color: black;">{{format Price}}<ins
+                        >đ</ins></del></h5>
+                  {{else}}
+                    <h5 class="card-title text-danger">{{format Price}}<ins
+                      >đ</ins></h5>
+                  {{/if}}
+                </div>
+               
+              </div>
+            </a>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  {{/if}}
+
+</div>

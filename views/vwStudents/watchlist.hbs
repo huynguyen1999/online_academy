@@ -1,0 +1,77 @@
+{{change studentMenuOption 0}}
+<form action="/student/remFav" method="POST" id="f_remFav">
+    <input type="hidden" name="wl_ID" id="hid_rem_wl_ID" value="">
+</form>
+<h5 class="card-header">Your watchlist</h5>
+<div class="card mb-3">
+    {{#each courses}}
+    <div class="row g-0 m-2 shadowBox">
+        <div class="col-md-4" style="position: relative">
+            <img class="center card-img-top" src="../../public/images/{{CourseID}}.jpg" alt="{{CourseName}}"
+                onerror='this.onerror = null; this.src="../../public/images/{{CourseID}}.jpeg"'>
+        </div>
+        <div class="col-md-6">
+            <div class="card-body">
+                <a class="card-title" href="/course/{{CourseID}}">
+                    <h5>{{CourseName}}</h5>
+                </a>
+                <p class="card-text">{{TinyDes}}</p>
+                <p class="card-text text-danger " style="font-weight:bold;margin-top:-15px;">Students enrolled:
+                    {{TotalStudents}}</p>
+                <div class="d-flex justify-content" style="margin-top:-10px;">
+                    <p style="margin-right: 10px">Rating: <strong>{{Rate}}</strong> </p>
+                    <div class="stars-outer">
+                        <div class="stars-inner" data-value="{{Rate}}"></div>
+                    </div>
+                    <p>&nbsp; ({{NumRate}} rates)</p>
+                </div>
+                <p class="text-muted" style="margin:-10px 0 -3px 0;font-size:small">Course status
+                    {{#ifeq Active 0}}
+                    <i class="fas fa-check fa-xs fa-fw" style="position:relative;top:-1px;"></i>
+                    {{/ifeq}}
+                    {{#ifeq Active 1}}
+                    <i class="fas fa-sync fa-xs fa-fw" style="position:relative;top:-1px;"></i>
+                    {{/ifeq}}
+                    <br>
+                    Last update on {{LastUpdate}}
+                    <br>
+                    Views: {{NumberSeen}}
+                </p>
+            </div>
+        </div>
+        <div class="col-md-2 d-flex flex-column justify-content-center">
+            <a type="button" class="btn btn-outline-success btn-course btn-raised shadow my-button w-xs mb-2"
+                href="/student/learn?id={{CourseID}}" role="button">
+                <i class="fas fa-play fa-fw"></i>
+            </a>
+            <button type="submit" class="btn btn-outline-danger btn-course btn-raised shadow my-button w-xs"
+                id="btn_remFav" data-wl_ID="{{wl_ID}}">
+                <i class="fa fa-window-close fa-fw"></i>
+            </button>
+        </div>
+    </div>
+    {{/each}}
+</div>
+
+
+{{#section 'js'}}
+<script>
+    $( document ).on( 'click', '#btn_remFav', function ()
+    {
+        const wl_ID = $( this ).attr( "data-wl_ID" );
+        $( '#hid_rem_wl_ID' ).val( wl_ID );
+        $( '#f_remFav' ).submit();
+    } )
+</script>
+{{/section}}
+{{#section 'css'}}
+<style>
+    .course-controller {
+        flex: 1 1 auto;
+        margin: 5px;
+        border: 3px solid;
+    }
+
+</style>
+<link rel="stylesheet" href="/public/stylesheets/courses.css">
+{{/section}}

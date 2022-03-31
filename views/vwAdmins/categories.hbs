@@ -1,0 +1,97 @@
+{{#section 'js'}}
+<script>
+    function edit(id){
+        $(`#edit-form-${id}`).show();
+        $(`#catname-${id}`).hide();
+        console.log('hide');
+    }
+
+    function cancelEdit(id){
+        $(`#edit-form-${id}`).hide();
+        $(`#catname-${id}`).show();
+    }
+
+</script>
+
+{{/section}}
+
+<div class="card">
+  <h5 class="card-header">Categories</h5>
+  <div class="card-body">
+    <button style="margin-bottom: 20px" type="button" class="btn btn-primary" onclick="$('#newForm').show();"><i class="fas fa-plus"></i></button>
+    <table class="table table-hover">
+      {{!-- <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col"></th>
+          <th scope="col"></th>
+          <th scope="col"></th>
+        </tr>
+      </thead> --}}
+      <tbody>
+        <tr style="display:none;" id="newForm">
+            <form action="/admin/categories/addParent" method="post">
+                <th scope="row">
+                  <input type="text" class="form-control input-sm" id="txtCatName" name="CatName"  style="width: 200px;" autofocus required>
+                  <button type="button" class="btn btn-secondary" onclick="$('#newForm').hide();" style="margin: 5px 15px;">Cancel</button>
+                  <button type="submit" class="btn btn-success" style="margin: 5px 15px;">Save</button>
+                </th>
+                <td></td>
+                <td></td>
+            </form>
+        </tr>
+        {{#each lcCategories}}
+        <tr>
+          <th scope="row" id="catname-{{parent.CatID}}"><i class="fa fa-list" aria-hidden="true"></i> {{parent.CatName}}</th>
+          <form action="/admin/categories/edit/{{parent.CatID}}" method="post">
+            <th scope="row" style="display:none;" id="edit-form-{{parent.CatID}}">
+              <input type="text" class="form-control input-sm" id="txtCatName" name="CatName" value="{{parent.CatName}}" style="width: 200px;" autofocus required>
+              <button type="button" class="btn btn-secondary" onclick="cancelEdit({{parent.CatID}})" style="margin: 5px 15px;">Cancel</button>
+              <button type="submit" class="btn btn-success" style="margin: 5px 15px;">Save</button>
+            </th>
+          </form>
+          <td></td>
+            <td>
+            <div style="display: flex; flex-direction: row;  align-items:center;">
+              <button class="btn btn-warning" onclick="edit({{parent.CatID}})"><i class="fas fa-edit"></i></button>
+              <form method="post" action="/admin/categories/delete/{{parent.CatID}}" style="margin: 0px 5px;"><button type="submit" class="btn btn-danger"><i class="far fa-trash-alt"></i></button></form>
+              <button type="button" class="btn btn-primary" onclick="$('#newForm-{{parent.CatID}}').show();"><i class="fas fa-plus"></i></button>
+            </div>
+            </td>
+        </tr>
+        {{#each this.children}}
+        <tr>
+          <th scope="row"></th>
+          <td id="catname-{{CatID}}" ><i class="fa fa-list" aria-hidden="true"></i> {{CatName}}</td>
+          <form action="/admin/categories/edit/{{CatID}}" method="post">
+            <td scope="row" style="display:none;" id="edit-form-{{CatID}}">
+              <input type="text" class="form-control input-sm" id="txtCatName" name="CatName" autofocus value="{{CatName}}" style="width: 200px;" required>
+              <button type="button" class="btn btn-secondary" onclick="cancelEdit({{CatID}})" style="margin: 5px 15px;">Cancel</button>
+              <button type="submit" class="btn btn-success" style="margin: 5px 15px;">Save</button>
+            </td>
+          </form>
+          <td>
+          <div style="display: flex; flex-direction: row; align-items:center;">
+              <button class="btn btn-warning" onclick="edit({{CatID}})"><i class="fas fa-edit"></i></button>
+              <form method="post" action="/admin/categories/delete/{{CatID}}" style="margin-left: 5px;"><button type="submit" class="btn btn-danger"><i class="far fa-trash-alt"></i></button></form>
+            </div>    
+          </td>
+        </tr>  
+        {{/each}}
+        <tr style="display:none;" id="newForm-{{parent.CatID}}">
+            <form action="/admin/categories/add/{{parent.CatID}}" method="post" id="frmRegister" >
+                <th scope="row"></th>
+                <td scope="row" id="edit-form-{{CatID}}">
+                    <input type="text" class="form-control input-sm" id="txtCatName" name="CatName" autofocus value="{{CatName}}" style="width: 200px;" required>
+                    <button type="button" class="btn btn-secondary" onclick="$('#newForm-{{parent.CatID}}').hide();" style="margin: 5px 15px;">Cancel</button>
+                    <button type="submit" class="btn btn-success" style="margin: 5px 15px;">Save</button>
+                </td>
+                <td></td>
+            </form>
+        </tr>
+        {{/each}}
+        
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,117 @@
+<div class="row justify-content-between">
+    <div class="col-md-9" style="height:600px; overflow:hidden;">
+        <video style="width:100%;height:100%;border:1px black solid;" class="video-js p-0 m-0" controls preload="auto"
+            id="video_chapter">
+            <source id="video_source" src="/public/videos/video{{firstChapterID}}.mp4" type="video/mp4">
+        </video>
+    </div>
+
+
+    <div class="col-md-3" style="border:5px solid black">
+        <form method="POST" id="f_courseProgress" action="/student/save">
+            <h2 class="text-muted" style="border-bottom:1px gray solid">
+                Course content
+            </h2>
+            <div class="sidebar-sticky" style="font-size:0.6cm;">
+                <input type="hidden" id="currentChapterID" value="{{firstChapterID}}">
+                <ul class="nav flex-column ">
+                    {{#each chapters}}
+                    <div class="p-1 text-left" id="nav_{{ChapterID}}">
+                        <input type="hidden" name="chapters[{{@index}}][ChapterID]" value="{{ChapterID}}">
+                        <input type="hidden" name="chapters[{{@index}}][Time]" id="hid_chapter{{ChapterID}}_time"
+                            value="{{ChapterProgress.Time}}">
+                        <input type="hidden" name="chapters[{{@index}}][EnrollDetails_ID]"
+                            value="{{ChapterProgress.ed_ID}}">
+                        <input type="checkbox" id="cb_chapter{{ChapterID}}_done"
+                            style="position:relative;bottom:-7px;left:5px" {{#ifeq ChapterProgress.Done
+                            1}}checked{{/ifeq}}>
+                        <input type="hidden" id="hid_chapter{{ChapterID}}_done" name="chapters[{{@index}}][Done]"
+                            value="{{ChapterProgress.Done}}">
+                        <label class="btn" style="font-size:0.6cm" data-id="{{ChapterID}}">{{ChapterName}}</label>
+                    </div>
+                    {{/each}}
+                </ul>
+
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+{{#section 'js'}}
+<script>
+    let vid = document.getElementById( "video_chapter" );
+    let video_source = document.getElementById( "video_source" );
+    let currentChapterID = $( '#currentChapterID' ).val();
+    $( `#nav_${ currentChapterID }` ).css( 'background-color', 'gray' );
+
+    $( document ).ready( function ()
+    {
+        vid.currentTime = $( `#hid_chapter${ currentChapterID }_time` ).val();
+    } )
+    const GetCourseID = function ()
+    {
+        const params = new URLSearchParams( window.location.search );
+        let CourseID = 0;
+        if ( params.has( 'id' ) )
+            CourseID = params.get( 'id' );
+        return CourseID;
+    }
+    CourseID = GetCourseID();
+    $( document ).on( 'click', '.sidebar-sticky input:checkbox', function ()
+    {
+        const id = $( this ).attr( 'id' );
+        const chapterStatus = $( `#${ id }~input[type="text"]` ).val();
+        $( `#${ id }~input[type="text"]` ).val( chapterStatus ^ 1 );
+    } );
+    $( document ).on( 'click', '.sidebar-sticky label', function ()
+    {
+        const NewChapterID = $( this ).attr( 'data-id' );
+        $( '#currentChapterID' ).val( NewChapterID );
+        $( `#nav_${ currentChapterID }` ).css( `background-color`, 'white' );
+        currentChapterID = NewChapterID;
+        $( `#nav_${ currentChapterID }` ).css( 'background-color', 'gray' );
+        vid.pause();
+        video_source.setAttribute( 'src', `/public/videos/video${ currentChapterID }.mp4` );
+        vid.load();
+        vid.currentTime = $( `#hid_chapter${ currentChapterID }_time` ).val();
+    } );
+    vid.onended = function ()
+    {
+        $( `#hid_chapter${ currentChapterID }_done` ).val( 1 );
+        $( `#cb_chapter${ currentChapterID }_done` ).attr( 'checked', 'true' );
+    }
+    vid.ontimeupdate = function ()
+    {
+        $( `#hid_chapter${ currentChapterID }_time` ).val( vid.currentTime );
+    };
+    $( window ).on( 'beforeunload', function ()
+    {
+        const url = $( '#f_courseProgress' ).attr( 'action' );
+        const data = JSON.stringify( $( '#f_courseProgress' ).serializeArray() );
+        navigator.sendBeacon( url, data );
+        console.log( data );
+    } );
+</script>
+{{/section}}
+
+{{#section 'css'}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css
+">
+<style>
+    .video-shadow {
+        box-shadow: rgba(199, 199, 235, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    }
+
+    input[type='checkbox'] {
+        margin-right: 5px;
+        width: 30px;
+        height: 30px;
+        background: white;
+        border-radius: 5px;
+        border: 2px solid #555;
+    }
+
+</style>
+{{/section}}

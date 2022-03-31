@@ -1,0 +1,178 @@
+{{#section 'css'}}
+<link type="text/css" rel="stylesheet" href="../../public/stylesheets/courses.css">
+{{/section}}
+{{#section 'js'}}
+<script>
+  $("#selectID").val("{{CatID}}").change();
+</script>
+<script>
+    $( '.stars-inner' ).css( "width", function ()
+    {
+        const rating = $( this ).data( 'value' );
+        return `${ Math.round( rating * 20 ) }%`;
+    } );
+
+
+    const maxpage = +$('#maxpage').text();
+    console.log(maxpage);
+
+    currentPage = +$('#item2').text();
+    console.log(currentPage);
+
+    $('#item1').text(currentPage - 1);
+    $('#item3').text(currentPage + 1);
+    
+    console.log({{CatID}});
+
+    const value1 = +$('#item1').text();
+    $('#item1').attr("href", `?CatID=${CatID}&l_Username=${l_Username}&page=${value1}`);
+    const value2 = +$('#item2').text();
+    $('#item2').attr("href", `?CatID=${CatID}&l_Username=${l_Username}&page=${value2}`);
+    const value3 = +$('#item3').text();
+    $('#item3').attr('href', `?CatID=${CatID}&l_Username=${l_Username}&page=${value3}`);
+
+    if (value1 < 1){
+        $('#page-item1').hide();
+        $('#page-previous').addClass('disabled');
+    }
+    if (value3 > maxpage){
+        $('#page-item3').hide();
+        $('#page-next').addClass('disabled');
+    }
+
+    $('#previous').attr('href', `?query=${query}&option=${opt}&page=${currentPage-1}`)
+    $('#next').attr('href', `?query=${query}&option=${opt}&page=${currentPage+1}`)
+    
+</script>
+{{/section}}
+{{!-- {{#section 'js'}}
+<script>
+  $('.addItem').on('click', function () {
+    const id = $(this).data('id');
+    $('#txtProId').val(id);
+    $('#txtQ').val(1);
+    $('#frmAddItem').submit();
+  });
+</script>
+{{/section}} --}}
+
+<form class="my-10 my-lg-2" id="option-form" method="get">
+    <div class="form-group">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text">Category</label>
+            </div>
+            <select class="custom-select" name="CatID" id="selectID">
+                <option value="0">
+                    All
+                </option>
+                {{#each lcCategories}}
+                <optgroup label="{{parent.CatName}}">
+                    {{#each children}}
+                    <option value="{{CatID}}">
+                        {{CatName}}
+                    </option>
+                    {{/each}}
+                </optgroup>
+                {{/each}}
+            </select>
+        </div>
+    </div>
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon1">Lecturer</span>
+      </div>
+      <input type="text" class="form-control" value="{{l_Username}}" name="l_Username" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+    </div>
+    <button type="submit" class="btn btn-info"><i class="fas fa-filter"></i> Filter</button>
+</form>
+
+<div class="card justify-content-center"  style="margin-top: 20px">
+  <h5 class="card-header">
+    Courses
+  </h5>
+  {{#if this.empty}}
+  <div class="card-body">
+    <p class="card-text">Không có dữ liệu.</p>
+  </div>
+  {{else}}
+  <form action="/cart/add" method="POST" id="frmAddItem">
+    <input type="hidden" name="id" id="txtProId">
+    <input type="hidden" name="quantity" id="txtQ">
+  </form>
+  <div class="card-body">
+    <div class="row">
+      {{#each this.courses}}
+      <div class="col-sm-3 mb-3">
+        <a  href="/course/{{CourseID}}">
+        <div class="card h-100">
+          <img src="/public/images/{{CourseID}}.jpg" class="card-img-top" alt="{{CourseName}}"
+            title="{{CourseName}}" onerror='this.onerror = null; this.src="/public/images/{{CourseID}}.jpeg"'>
+          <div class="card-body">
+            <h6 class="card-title">{{CourseName}}</h6>
+            <p class="card-text" style="color: black;">
+              <a href="/courses/byCat/{{CatID}}">{{CatName}}</a>
+            </p>
+            <p class="card-text">
+              {{Lecturers}}
+            </p>
+            {{!-- {{#if Rate}}
+            <p class="card-text">
+              {{Rate}}⭐ ({{NumRate}})
+            </p>
+            {{/if}} --}}
+            {{!-- <p class="card-text">
+              {{Rate}}⭐ ({{NumRate}} votes)
+            </p> --}}
+            <div class="d-flex justify-content" style="color:darkgoldenrod">
+                {{#if Rate}}  
+                  <p style="margin-right: 5px"><strong>{{Rate}}</strong> </p>
+                {{else}}
+                  <p style="margin-right: 5px"><strong>0</strong> </p>
+                {{/if}}
+                <div class="stars-outer">
+                  <div class="stars-inner" data-value="{{Rate}}"></div>
+                </div>
+                <p class="card-text" style="margin-left: 5px">
+                  ({{NumRate}} votes)
+                </p>
+            </div>
+            {{#if PricePromotion}}
+            <h5 class="card-title text-danger">{{format PricePromotion}}đ <del style="color: black;">{{format Price}}<ins>đ</ins></del></h5>
+            {{else}}
+            <h5 class="card-title text-danger">{{format Price}}<ins>đ</ins></h5>
+            {{/if}}
+          </div>
+          <div class="card-footer">
+            {{#if IsDisable}}
+            <form method="post" action="/admin/courses/unlock/{{CourseID}}"><button type="submit" class="btn btn-danger"><i class="fas fa-eye-slash"></i> Disable</button></form>
+            {{else}}
+            <form method="post" action="/admin/courses/lock/{{CourseID}}"><button type="submit" class="btn btn-primary"><i class="fas fa-eye"></i> Undisable</button></form>
+            {{/if}}
+          </div>
+        </div>
+        </a>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+  {{/if}}
+  {{!-- <div class="card-footer text-center">
+    <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" id="page-previous">
+        <a class="page-link" href="#" id="previous">Previous</a>
+        </li>
+        <li class="page-item" id="page-item1"><a class="page-link" href="#" id="item1">{{page}}</a></li>
+        <li class="page-item active"><a class="page-link" href="#" id="item2">{{page}}</a></li>
+        <li class="page-item" id="page-item3"><a class="page-link" href="#" id="item3">{{page}}</a></li>
+        <li class="page-item" id="page-next">
+        <a class="page-link" href="#" id="next">Next</a>
+        </li>
+    </ul>
+    </nav>
+
+    <p id="maxpage" hidden>{{maxpage}}</p>
+    <p id="CatID">{{CatID}}</p>
+  </div> --}}
+</div>

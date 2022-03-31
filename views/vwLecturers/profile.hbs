@@ -1,0 +1,153 @@
+{{!-- tạo menu gồm các chức năng
++ thêm courses
++ xem courses
++
+--}}
+{{change lecturerMenuOption 0}}
+
+<h5 class="card-header">Basic infomation</h5>
+
+{{#with lecturer}}
+<div class="card">
+
+    {{!-- form change profile --}}
+    <form class="p-2" method="POST" id="formChangeProfile" action="/lecturer/profile" onsubmit="return isValid();">
+        <div class="form-group">
+            <input type="hidden" name="id" class="form-control" id="txtID" value="{{l_ID}}">
+        </div>
+        <div class="form-group">
+            <label for="txtName">Name</label>
+            <label class="error" id="errName">Required</label>
+            <input type="text" name="name" class="form-control" id="txtName" value="{{l_Name}}" required
+                oninput="oninputName()">
+        </div>
+        <div class="form-group">
+            <label for="txtEmail">Email address</label>
+            <label class="error" id="errEmail">Required</label>
+            <input type="email" name="email" class="form-control" id="txtEmail" value="{{l_Email}}" required
+                oninput="oninputEmail()">
+        </div>
+        <div class="form-group">
+            <label for="txtDOB">Date of birth</label>
+            <label class="error">Required</label>
+            <input type="text" name="dob" class="form-control" id="txtDOB" autocomplete="off" value="{{l_DOB}}"
+                required>
+        </div>
+        <div class="form-group">
+            <label for="txtOccupation">Occupation</label>
+            <label class="error">Required</label>
+            <input type="text" name="occupation" class="form-control" id="txtOccupation" value="{{l_Occupation}}"
+                required>
+        </div>
+        <div class="form-group">
+            <label for="txtDescription">Biography</label>
+            <input type="text" name="description" class="form-control" id="txtDescription" value="{{l_Description}}">
+        </div>
+
+        <div class="card-footer text-muted m-0 p-0">
+            <button type="submit" class="btn btn-outline-success">
+                <i class="fa fa-check    "></i>
+                Save
+            </button>
+        </div>
+
+    </form>
+</div>
+{{/with}}
+
+{{!-- ----------------- --}}
+{{#section 'css'}}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<style>
+    .error {
+        float: right;
+        text-align: right;
+        color: orangered;
+    }
+
+</style>
+{{/section}}
+{{#section 'js'}}
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src='https://cdn.tiny.cloud/1/n198w4ja66mztqqncqckoiyq4t1hkitxjqze0i9l1lxxummm/tinymce/5/tinymce.min.js'
+    referrerpolicy="origin"></script>
+<script>
+    $( '#txtDOB' ).datepicker();
+</script>
+
+<script>
+    tinymce.init( {
+        selector: '#txtDescription',
+        height: 200,
+        plugins: 'paste image link autolink lists table media',
+        menubar: false,
+        toolbar: [
+            'undo redo | bold italic underline strikethrough | numlist bullist | alignleft aligncenter alignright | forecolor backcolor | table link image media',
+        ],
+    } );
+
+</script>
+
+<script>
+    function validateEmail( email )
+    {
+        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test( String( email ).toLowerCase() );
+    }
+
+    function oninputEmail()
+    {
+        const emailValue = formChangeProfile.txtEmail.value;
+        let emailErrNoti = '';
+        if ( !validateEmail( emailValue ) )
+        {
+            emailErrNoti = 'Please fill out a valid email format';
+        }
+        document.getElementById( 'errEmail' ).innerHTML = emailErrNoti;
+    }
+
+    function validateName( name )
+    {
+        const reg = /^[a-z ,.'-]+$/i;
+        return reg.test( name );
+    }
+    function oninputName()
+    {
+        const currentName = formChangeProfile.txtName.value;
+        let nameErrNoti = '';
+        if ( !validateName( currentName ) )
+        {
+            nameErrNoti = 'Remember the name!';
+        }
+        else nameErrNoti = 'Required';
+        document.getElementById( 'errName' ).innerHTML = nameErrNoti;
+    }
+    function isValid()
+    {
+        console.log('Validate');
+        const nameValue = formChangeProfile.txtName.value;
+        let nameErrNoti = '';
+        if ( validateName( nameValue ) === false )
+        {
+            nameErrNoti = 'Please fill out your correct name!';
+            console.log( 'Error Name!!!' );
+            return false;
+        }
+        document.getElementById( 'errName' ).innerHTML = errNameNoti;
+
+        const emailValue = formChangeProfile.txtEmail.value;
+        let emailErrNoti = '';
+        if ( validateEmail( emailValue ) === false )
+        {
+            emailErrNoti = 'Please fill out a valid email format';
+            console.log( 'Error Email!!!' );
+            return false;
+        }
+        document.getElementById( 'errEmail' ).innerHTML = emailErrNoti;
+
+        return true;
+    }
+</script>
+
+{{/section}}

@@ -1,0 +1,126 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow">
+  <a class="navbar-brand" href="/">
+    <i class="fas fa-home fa-lg" style="color:blue"></i>
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/courses/byCat/0">Categories</a>
+      </li>
+      
+    </ul>
+    <form class="form-inline my-2 my-lg-0" method="get" id="my-form-search">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search for anything" aria-label="Search" onkeyup="myFunction()" id="my-input-search" name="query">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+        <i class="fa fa-search" aria-hidden="true"></i>
+        Search
+      </button>
+    </form>
+    <form id="frmLogout" method="POST" action="/account/logout"></form>
+    <form id="frmLogoutLecturer" method="POST" action="/lecturer/account/logout"></form>
+    <form id="frmLogoutAdmin" method="POST" action="/admin/account/logout"></form>
+    <ul class="navbar-nav ml-auto">
+      {{#if isAuth}}
+      {{#if isStudent}}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-user" aria-hidden="true"></i>
+          Welcome, <b>{{authUser.s_Name}}</b>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="float: right;">
+          <a class="dropdown-item" href="/account/profile">
+            <i class="fa fa-user" aria-hidden="true"></i>
+            Profile
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="/account/change-password">
+            <i class="fa fa-key" aria-hidden="true"></i>
+            Change Password
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="javascript: $('#frmLogout').submit();">
+            <i class="fa fa-sign-out" aria-hidden="true"></i>
+            Sign Out
+          </a>
+        </div>
+      </li>
+      {{else if isLecturer}}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-user" aria-hidden="true"></i>
+          Welcome, <b>{{authUser.l_Name}}</b>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="float: right;">
+          <a class="dropdown-item" href="/lecturer/profile">
+            <i class="fa fa-user" aria-hidden="true"></i>
+            Profile
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="/lecturer/account/change-password">
+            <i class="fa fa-key" aria-hidden="true"></i>
+            Change Password
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="javascript: $('#frmLogoutLecturer').submit();">
+            <i class="fa fa-sign-out" aria-hidden="true"></i>
+            Sign Out
+          </a>
+        </div>
+      </li>
+      {{else if isAdmin}}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-user" aria-hidden="true"></i>
+          Welcome, <b>{{authUser.a_Name}}</b>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="float: right;">
+          <a class="dropdown-item" href="/admin/account/profile">
+            <i class="fa fa-user" aria-hidden="true"></i>
+            Profile
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="/admin/account/change-password">
+            <i class="fa fa-key" aria-hidden="true"></i>
+            Change Password
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="javascript: $('#frmLogoutAdmin').submit();">
+            <i class="fa fa-sign-out" aria-hidden="true"></i>
+            Sign Out
+          </a>
+        </div>
+      </li>
+      {{/if}}
+      {{else}}
+      <li class="nav-item">
+        <a class="nav-link" href="/lecturer/account/login">
+          <i class="fas fa-chalkboard-teacher" aria-hidden="true"></i>
+          For lecturer
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/account/login">
+          <i class="fa fa-sign-in" aria-hidden="true"></i>
+          Log in
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/account/register">
+          <i class="fa fa-user-plus" aria-hidden="true"></i>
+          Sign up
+        </a>
+      </li>
+      {{/if}}
+    </ul>
+  </div>
+</nav>
+
+

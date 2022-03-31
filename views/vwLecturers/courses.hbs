@@ -1,0 +1,79 @@
+{{change lecturerMenuOption 0}}
+
+<h5 class="card-header">All your posted courses</h5>
+
+<div class="card mb-3">
+    <form method="POST" id="formDeleteCourse">
+        <input id="txtCourseID" type="hidden" name="id" value="">
+    </form>
+    {{#each courses}}
+
+    <div class="row g-0 m-2 shadowBox">
+        <div class="col-md-4" style="position: relative">
+            <img class="center card-img-top" src="../../public/images/{{CourseID}}.jpg" alt="{{CourseName}}"
+                onerror='this.onerror = null; this.src="../../public/images/{{CourseID}}.jpeg"'>
+        </div>
+        <div class="col-md-6">
+            <div class="card-body">
+                <a class="card-title" href="/course/{{CourseID}}">
+                    <h5>{{CourseName}}</h5>
+                </a>
+                <p class="card-text">{{TinyDes}}</p>
+                <p class="card-text text-danger">Students enrolled: {{totalStudents}}</p>
+                <div class="d-flex justify-content">
+                    <p style="margin-right: 10px">Rating: <strong>{{rating}}</strong> </p>
+                    <div class="stars-outer">
+                        <div class="stars-inner" data-value="{{rating}}"></div>
+                    </div>
+                </div>
+                <p class="text-muted" style="margin-bottom:-3px;font-size:small">Status
+                    {{#ifeq Active 0}}
+                    <i class="fas fa-check fa-xs fa-fw" style="position:relative;top:-1px;"></i>
+                    {{/ifeq}}
+                    {{#ifeq Active 1}}
+                    <i class="fas fa-sync fa-xs fa-fw" style="position:relative;top:-1px;"></i>
+                    {{/ifeq}}
+                </p>
+                <i class="fa fa-exclamation-circle fa-fw" aria-hidden="true"></i>
+                Last update on {{LastUpdate}}
+                <br>
+                <i class="fas fa-eye fa-fw"></i>
+                Views: {{NumberSeen}}
+
+            </div>
+        </div>
+        <div class="col-md-2 d-flex flex-column justify-content-center">
+            <a class="btn  btn-lg btn-block btn-raised shadow my-button w-xs " href="/lecturer/edit/{{CourseID}}"
+                role="button">
+                <i class="fas fa-edit fa-lg"></i>
+            </a>
+            {{!-- delete post --}}
+            <a class="btn  btn-lg btn-block btn-raised shadow my-button w-xs deleteCourse" role="button"
+                data-id="{{CourseID}}">
+                <i class="fas fa-trash fa-lg"></i>
+            </a>
+        </div>
+
+    </div>
+    {{/each}}
+
+</div>
+
+{{#section 'css'}}
+<link rel="stylesheet" href="/public/stylesheets/courses.css">
+{{/section}}
+{{#section 'js'}}
+<script>
+    $( '.stars-inner' ).css( "width", function ()
+    {
+        const rating = $( this ).data( 'value' );
+        return `${ Math.round( rating * 20 ) }%`;
+    } );
+    $( '.deleteCourse' ).on( 'click', function ()
+    {
+        const CourseID = $( this ).data( 'id' );
+        $( '#formDeleteCourse' ).attr( 'action', `/lecturer/delete/${ CourseID }` );
+        $( '#formDeleteCourse' ).submit();
+    } )
+</script>
+{{/section}}

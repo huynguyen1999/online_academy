@@ -1,0 +1,282 @@
+{{change lecturerMenuOption 0}}
+<h5 class="card-header">Add your course</h5>
+{{!-- Cấm FORMAT bằng tool --}}
+<div class="card">
+    {{!-- form change profile --}}
+    <form class="p-2" method="POST" id="formAddCourse" enctype="multipart/form-data" action="/lecturer/add">
+        <input type="hidden" value="{{newCourseID}}" name="courseID">
+        <div class="form-group">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text">Category</label>
+                </div>
+                <select class="custom-select" name="catID">
+                    {{#each lcCategories}}
+                    <optgroup label="{{parent.CatName}}">
+                        {{#each children}}
+                        <option value="{{CatID}}" {{#ifeq ../CatID CatID}}selected{{/ifeq}}>
+                            {{CatName}}
+                        </option>
+                        {{/each}}
+                    </optgroup>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="txtName">Course name</label>
+            <label style="color:red;float:right">Required</label>
+            <input type="text" name="name" class="form-control" id="txtName" placeholder="Photoshop for beginners"
+                required>
+        </div>
+        {{!-- upload anh --}}
+        <div class="form-group">
+            <label for="fuThumbnail">Upload thumbnail</label>
+            <label style="color:red;float:right">Required</label>
+            <input id="fuThumbnail" name="{{newCourseID}}" type="file" class="file" accept=".jpg" required>
+        </div>
+
+        <div class="form-group">
+            <label for="txtTinyDes">Brief description</label>
+            <label style="color:red;float:right">Required</label>
+            <input type="text" name="tinyDes" class="form-control" id="txtTinyDes" required>
+        </div>
+        <div class="form-group">
+            <label for="txtFullDes">Full description</label>
+            <input type="text" name="fullDes" class="form-control" id="txtFullDes" value="">
+        </div>
+
+        <div class="form-group" id="lecturers">
+            <input type="hidden" id="lecturerNo" value="1"></input>
+            <label for="">Created by</label>
+            <div class="d-flex justify-content">
+                <label style="position:relative; left:20px">Lecturer 1's ID:
+                </label>
+                <input type="number" style="width: 100px" name="lecturers[0][id]" class="form-control myInput"
+                    value="{{currentLecturer}}" readonly>
+
+                <a class="btn-lg btn flex-sm-grow-0 addLecturer" role="button">
+                    <i class="fas fa-plus-square  fa-lg"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="txtPrice">Price</label>
+            <label style="color:red;float:right">Required</label>
+            <input type="number" name="price" class="form-control" id="txtPrice">
+        </div>
+        <div class="form-group">
+            <label for="txtPricePromotion">Price promotion</label>
+            <label style="color:red;float:right">Required</label>
+            <input type="number" min="0" max="100" name="pricePromotion" class="form-control" id="txtPricePromotion">
+        </div>
+
+        <div class="form-group">
+            <input type="hidden" id="latestChapterNo" value="1">
+            <input type="hidden" id="latestChapterID" value="{{currentChapterID}}">
+            <label for="">Content</label>
+            <div class="d-flex justify-content" id="chapters" style="flex-wrap: wrap">
+                <label style="position:relative; left:20px">Chapter 1 Name:
+                </label>
+                <input type="hidden" name="chapters[0][id]" value="{{currentChapterID}}">
+
+                <input type="text" style="width: 800px" name="chapters[0][name]" class="form-control myInput"
+                    value="Introduction" readonly>
+
+                <a class="btn-lg btn flex-sm-grow-0 addChapter" role="button">
+                    <i class="fas fa-plus-square  fa-lg"></i>
+                </a>
+
+                <div class="chapterVideoUpload w-75">
+                    <label>Upload video for chapter 1</label>
+                    <label style="color:red;float:right">Required</label>
+                    <input class="fuVideo" name="video{{currentChapterID}}" type="file" class="file" accept="video/*">
+                </div>
+            </div>
+
+            <div class="chaptersDone">
+                <label for="">Chapters completed?</label>
+                <input type="hidden" id="activeCheckboxValue" name="active" value="1">
+                <input type="checkbox" id="activeCheckbox">
+
+            </div>
+        </div>
+
+        <div class="card-footer text-muted m-0 p-0">
+            <button type="submit" class="btn btn-outline-success">
+                <i class="fa fa-check "></i>
+                Save
+            </button>
+        </div>
+
+    </form>
+</div>
+{{!-- ------------------------- --}}
+{{#section 'css'}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.1.3/css/fileinput.min.css">
+
+<style>
+    .dropdown-toggle::after {
+        float: right;
+    }
+
+    .space-between {
+        justify-content: space-between;
+    }
+
+    .addLecturer,
+    .addChapter {
+        margin: 0;
+        padding: 0;
+        position: relative;
+        left: 10px;
+        bottom: 3px;
+    }
+
+    .myInput {
+        position: relative;
+        margin-left: 30px;
+        max-width: 50%;
+        bottom: 5px
+    }
+
+    .chapterVideoUpload {
+        flex: none;
+        margin-left: 40px;
+        margin-bottom: 20px
+    }
+
+    input[type="checkbox"] {
+        margin: auto;
+        position: relative;
+        top: 10px;
+        left: 10px;
+        width: 30px;
+        /*Desired width*/
+        height: 30px;
+        /*Desired height*/
+        cursor: pointer;
+    }
+
+</style>
+{{/section}}
+{{#section 'js'}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.1.3/js/fileinput.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.1.3/themes/fa/theme.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src='https://cdn.tiny.cloud/1/n198w4ja66mztqqncqckoiyq4t1hkitxjqze0i9l1lxxummm/tinymce/5/tinymce.min.js'
+    referrerpolicy="origin"></script>
+<script>
+    let Lecturers = [];
+   
+    {{#each allLecturers }}
+    Lecturers.push({{ this.l_ID }});
+    {{/each}}
+    //alert(Lecturers);
+    
+    function isValidLecturer(inputID){
+        if(inputID=={{currentLecturer}})
+            return false;
+        for(const l_id of Lecturers){
+            if(l_id == inputID){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function oninputLecturerID( currentLecturerID )
+    {
+        const inputID=$(`#in_lecturer${ currentLecturerID }`).val();
+        //validate
+        if(isValidLecturer(inputID)===false)
+            $(`#in_lecturer${ currentLecturerID }`).val('');
+    }
+</script>
+<script>
+        tinymce.init( {
+            selector: '#txtFullDes',
+            height: 300,
+            plugins: 'paste image link autolink lists table media',
+            menubar: false,
+            toolbar: [
+                'undo redo | bold italic underline strikethrough | numlist bullist | alignleft aligncenter alignright | forecolor backcolor | table link image media',
+            ],
+        } );
+        $( '#fuThumbnail' ).fileinput( {
+            theme: 'fa',
+            dropZoneEnabled: false,
+            allowedFileExtensions: [ 'jpg' ],
+        } );
+        $( '.fuVideo' ).fileinput( {
+            theme: 'fa',
+            dropZoneEnabled: false,
+            allowedFileExtensions: [ 'mp4' ],
+        } );
+        // bind sự kiện vào parent
+        $( '#lecturers' ).on( 'click', '.addLecturer', function ()
+        {
+            const currentLectureNo = +$( '#lecturerNo' ).val() + 1;
+            $( '#lecturerNo' ).val( currentLectureNo );
+            $( '#lecturers' ).append( `
+            <div class="d-flex justify-content" >
+                <label style="position:relative; left:20px">Lecturer ${ currentLectureNo }'s ID:
+                </label>
+                <input type="number" style="width: 100px" name="lecturers[${ currentLectureNo - 1 }][id]" class="form-control myInput"
+                    id="in_lecturer${ currentLectureNo }" value="" required oninput="oninputLecturerID(${ currentLectureNo })">
+                <a class="btn-lg btn flex-sm-grow-0 addLecturer" role="button">
+                    <i class="fas fa-plus-square  fa-lg"></i>
+                <label style="color:red;float:right; margin-left:10px;">Required</label>
+                </a>
+                
+            </div>
+        ` );
+        } );
+        $( '#chapters' ).on( 'click', '.addChapter', function ()
+        {
+            const currentChapterNo = +$( '#latestChapterNo' ).val() + 1;
+            const currentChapterID = +$( '#latestChapterID' ).val() + 1;
+            $( '#latestChapterNo' ).val( currentChapterNo );
+            $( '#latestChapterID' ).val( currentChapterID );
+            $( '#chapters' ).append( `
+            <div class="d-flex justify-content" style="flex-wrap: wrap">
+                <input type="hidden" name="chapters[${ currentChapterNo - 1 }][id]" value=${ currentChapterID }>
+                <label style="position:relative; left:20px">Chapter ${ currentChapterNo } Name:
+                </label>
+                <label style="color:red;float:right;">Required</label>
+                <input type="text"  style="width: 800px" name="chapters[${ currentChapterNo - 1 }][name]" class="form-control myInput" required>
+
+                <a class="btn-lg btn flex-sm-grow-0 addChapter" role="button">
+                    <i class="fas fa-plus-square  fa-lg"></i>
+                </a>
+                <div class="chapterVideoUpload w-75">
+                    <label>Upload video for chapter ${ currentChapterNo }</label>
+                    <label style="color:red;float:right">Required</label>
+                    <input class="fuVideo" name="video${ currentChapterID }" type="file" class="file" required>
+                </div>
+            </div>
+        ` );
+            // chịu
+            $( '.fuVideo' ).fileinput( {
+                theme: 'fa',
+                dropZoneEnabled: false,
+                allowedFileExtensions: [ 'mp4' ],
+            } );
+        } )
+        $( document ).on( 'click', '#activeCheckbox', function ()
+        {
+            const currentDisplayStatus = $( '.addChapter' ).css( 'display' );
+            if ( currentDisplayStatus === 'none' )
+            {
+                $( '.addChapter' ).css( 'display', 'block' );
+                $( '#activeCheckboxValue' ).val( '1' );
+            }
+            else
+            {
+                $( '.addChapter' ).css( 'display', 'none' );
+                $( '#activeCheckboxValue' ).val( '0' );
+            }
+        } )
+</script>
+{{/section}}

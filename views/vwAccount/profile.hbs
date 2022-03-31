@@ -1,0 +1,88 @@
+{{!-- tạo menu gồm các chức năng
++ thêm courses
++ xem courses
++
+--}}
+
+{{!-- <div class="col-sm-10 border-0"> --}}
+    <h5 class="card-header">Basic infomation</h5>
+
+    {{#with userInfo}}
+    <div class="card">
+
+        {{!-- form change profile --}}
+        <form class="p-2" method="POST" id="formChangeProfile" >
+            <div class="form-group">
+                <input type="hidden" name="id" class="form-control" id="txtID" value="{{s_ID}}">
+            </div>
+            <div class="form-group">
+                <label for="txtUsername">Username</label>
+                <input type="text" name="username" class="form-control" id="txtUsername" value="{{s_Username}}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="txtName">Name</label>
+                <input type="text" name="name" class="form-control" id="txtName" value="{{s_Name}}">
+            </div>
+            {{!-- <div class="form-group">
+              <label for="txtPassword">Password</label>
+              <input type="password" class="form-control" id="txtPassword" name="password">
+            </div>
+            <div class="form-group">
+              <label for="txtConfirm">Confirm</label>
+              <input type="password" class="form-control" id="txtConfirm">
+            </div> --}}
+            <div class="form-group">
+                <label for="txtEmail">Email address</label>
+                <input type="email" name="email" class="form-control" id="txtEmail" value="{{s_Email}}">
+            </div>
+            <div class="form-group">
+                <label for="txtDOB">Date of birth</label>
+                <input type="text" name="dob" class="form-control" id="txtDOB" autocomplete="off" value="{{s_DOB}}">
+            </div>
+            <div class="form-group">
+                <label for="txtOccupation">Occupation</label>
+                <input type="text" name="occupation" class="form-control" id="txtOccupation" value="{{s_Occupation}}">
+            </div>
+            <div class="form-group">
+                <label for="txtDescription">Biography</label>
+                <input type="text" name="description" class="form-control" id="txtDescription"
+                    value="{{s_Description}}">
+            </div>
+
+            <div class="card-footer text-muted m-0 p-0">
+                <button type="submit" class="btn btn-outline-success">
+                    <i class="fa fa-check    "></i>
+                    Save
+                </button>
+            </div>
+
+        </form>
+    </div>
+    {{/with}}
+{{!-- </div> --}}
+{{!-- ----------------- --}}
+{{#section 'css'}}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{{/section}}
+{{#section 'js'}}
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src='https://cdn.tiny.cloud/1/n198w4ja66mztqqncqckoiyq4t1hkitxjqze0i9l1lxxummm/tinymce/5/tinymce.min.js'
+    referrerpolicy="origin"></script>
+<script>
+    $( '#txtDOB' ).datepicker();
+</script>
+
+<script>
+    tinymce.init( {
+        selector: '#txtDescription',
+        height: 200,
+        plugins: 'paste image link autolink lists table media',
+        menubar: false,
+        toolbar: [
+            'undo redo | bold italic underline strikethrough | numlist bullist | alignleft aligncenter alignright | forecolor backcolor | table link image media',
+        ],
+    } );
+</script>
+
+{{/section}}

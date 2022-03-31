@@ -1,0 +1,38 @@
+<div class="card">
+  <h5 class="card-header">Students</h5>
+  <div class="card-body">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">UserName</th>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">DOB</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each this.students}}
+        <tr>
+          <th scope="row">{{s_ID}}</th>
+          <td>{{s_Username}}</td>
+          <td>{{s_Name}}</td>
+          <td>{{s_Email}}</td>
+          <td>{{s_DOB}}</td>
+          <td>
+                <div style="display: flex; flex-direction: row; justify-content: center; align-items:center;">
+                {{#if this.s_IsActive}}
+                <form method="post" action="/admin/students/lock/{{s_ID}}"><button type="submit" class="btn btn-primary"><i class="fas fa-lock-open"></i></button></form>
+                {{else}}
+                <form method="post" action="/admin/students/unlock/{{s_ID}}"><button type="submit" class="btn btn-warning"><i class="fas fa-lock"></i></button></form>
+                {{/if}}
+                <form method="post" action="/admin/students/remove/{{s_ID}}" style="margin-left: 5px;"><button type="submit" class="btn btn-danger"><i class="far fa-trash-alt"></i></button></form>
+                </div>
+            </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,152 @@
+{{#section 'css'}}
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+<style>
+  .error {
+      float: right;
+      text-align: right;
+      color:orangered;
+  }
+</style>
+{{/section}}
+
+{{#section 'js'}}
+<script>
+  const validateName = nameValue => {
+      return nameValue.length !== 0;
+  }
+
+  function oninputName() {
+      const nameValue = $('#txtName').val();
+      console.log(nameValue);
+      let errNameNoti = '';
+      if (!validateName(nameValue)) {
+          errNameNoti = 'Please fill out your name';
+      }
+  }
+
+  function validateEmail(email) {
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(String(email).toLowerCase());
+  }
+
+  function oninputEmail() {
+      const emailValue = frmRegister.txtEmail.value;
+      let errEmailNoti = '';
+      if (!validateEmail(emailValue)) {
+          errEmailNoti = 'Please fill out a valid email format';
+      }
+  }
+
+
+  function isValid() {
+      let res = true;
+
+
+      const nameValue = frmRegister.txtName.value;
+      if (!validateName(nameValue)) {
+          console.log('Error Name!!!');
+          res = false;
+          alert('Error Name');
+      }
+
+
+      const emailValue = frmRegister.txtEmail.value;
+      if (!validateEmail(emailValue)) {
+          console.log('Error Email!!!');
+          alert('Error Email');
+          res =  false;
+      }
+
+      return res;
+  }
+
+
+
+
+</script>
+
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+<script>
+  $('#frmRegister').on('submit', function (e) {
+    e.preventDefault();
+
+    const username = $('#txtUsername').val();
+    if (username.length === 0) {
+      alert('Invalid data.');
+      return;
+    }
+
+
+    const email = $('#txtEmail').val();
+    $.getJSON(`/lecturer/account/is-available?user=${username}&email=${email}`, function (data) {
+      if (data === true) {
+        $('#frmRegister').off('submit').submit();
+      } else {
+        alert('UserName or Email is exist!!!');
+      }
+    })
+  });
+
+  $('#txtDOB').datetimepicker({
+    format: 'd/m/Y',
+    timepicker: false,
+    mask: true,
+  });
+</script>
+{{/section}}
+
+
+
+
+<div class="card">
+  <h5 class="card-header">Lecturers</h5>
+  <div class="card-body">
+    <button type="button" class="btn btn-success" style="margin-bottom: 20px" onclick="$('#newForm').show();"><i class="fas fa-plus"></i> New</button> 
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">UserName</th>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">DOB</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each this.lecturers}}
+        <tr>
+            <th scope="row">{{l_ID}}</th>
+            <td>{{l_Username}}</td>
+            <td>{{l_Name}}</td>
+            <td>{{l_Email}}</td>
+            <td>{{l_DOB}}</td>
+            <td>
+                <div style="display: flex; flex-direction: row; justify-content: center; align-items:center;">
+                {{#if this.l_IsActive}}
+                <form method="post" action="/admin/lecturers/lock/{{l_ID}}"><button type="submit" class="btn btn-primary"><i class="fas fa-lock-open"></i></button></form>
+                {{else}}
+                <form method="post" action="/admin/lecturers/unlock/{{l_ID}}"><button type="submit" class="btn btn-warning"><i class="fas fa-lock"></i></button></form>
+                {{/if}}
+                <form method="post" action="/admin/lecturers/remove/{{l_ID}}" style="margin-left: 5px;"><button type="submit" class="btn btn-danger"><i class="far fa-trash-alt"></i></button></form>
+                </div>
+            </td>
+        </tr>
+        {{/each}}
+        <tr style="display:none;" id="newForm">
+            <form action="/admin/lecturers/add" method="post" id="frmRegister" onsubmit="return isValid();">
+                <th scope="row"><button type="button" class="btn btn-secondary" onclick="$('#newForm').hide();">Cancel</button></th>
+                <td><input type="text" class="form-control" id="txtUsername" name="username" autofocus></td>
+                <td><input type="text" class="form-control" id="txtName" name="name" oninput="oninputName()"></td>
+                <td><input type="text" class="form-control" id="txtEmail" name="email" oninput="oninputEmail()"></td>
+                <td><input type="text" class="form-control" id="txtDOB" name="dob"></td>
+                <td><button type="submit" class="btn btn-success">Save</button></td>
+            </form>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

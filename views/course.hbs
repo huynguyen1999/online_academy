@@ -1,0 +1,497 @@
+<form action="/student/buy" method="POST" id="f_buy">
+    <input type="hidden" name="buy_id" id="hid_buy" value="">
+</form>
+<form action="/student/addFav" method="POST" id="f_addFav">
+    {{!-- add or remove => watchlist --}}
+    <input type="hidden" name="CourseID" id="hid_add_CourseID" value="">
+    <input type="hidden" name="s_ID" id="hid_add_s_ID" value="">
+</form>
+<form action="/student/remFav" method="POST" id="f_remFav">
+    <input type="hidden" name="wl_ID" id="hid_rem_wl_ID" value="">
+</form>
+
+<div class="container-fluid w-100 p-0 m-0" style="background-color: rgba(231, 223, 223, 0.925);">
+    {{#with CourseData}}
+    <div class="jumbotron text-light bg-dark">
+        <div class="row">
+            <div class="col-lg-8 ">
+                <input type="hidden" id="hid_courseid" value="{{CourseID}}" name="courseID">
+                {{!-- category --}}
+                <div class="text-info text-category"> {{CatParentName}} <span style="color: white">&nbsp;>&nbsp;</span>
+                    {{CatName}}</div>
+                {{!-- name --}}
+                <div class="text-name">{{CourseName}}</div>
+                {{!-- brief --}}
+                <div class="text-tinydes">{{TinyDes}}</div>
+                <div style="font-size:0.35cm">
+                    {{!-- rating - total ratings - students enrolled --}}
+                    <div class="d-flex">
+                        <div class="text-rate"> {{Rate}} &nbsp;</div>
+                        <div class="stars-outer">
+                            <div class="stars-inner" data-value="{{Rate}}"></div>
+                        </div>
+                        <div>&nbsp; ({{NumRate}} ratings) &nbsp;</div>
+                        <div> {{NumRate}} students &nbsp;</div>
+                    </div>
+                    {{!-- lecturers --}}
+                    <div>Created by
+                        {{#each ../CourseLecturers}}
+                        <a class="text-creator text-primary" href="#lecturer{{l_ID}}">{{details.l_Name}}</a>
+                        {{#unless @last}}
+                        <span>,&nbsp;
+                        </span>
+                        {{/unless}}
+                        {{/each}}
+                    </div>
+                    {{!-- last update --}}
+                    <div>
+                        <i class="fa fa-exclamation-circle fa-fw" aria-hidden="true"></i>
+                        Last update on {{LastUpdate}}
+                        <br>
+                        <i class="fas fa-eye fa-fw"></i>
+                        Views: {{NumberSeen}}
+                    </div>
+
+                </div>
+                {{!-- buttons --}}
+                {{!-- <div>Watchlist</div> --}}
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card text-left" style="width: 100%">
+                    <img class="card-img-top card-img-bottom" src="/public/images/{{CourseID}}.jpeg"
+                        onerror='this.onerror = null; this.src="/public/images/{{CourseID}}.jpg"'>
+                    <div class="card-body p-0 text-center mt-2">
+                        <h4 class="card-title text-price">{{format CurrentPrice}}đ</h4>
+                        {{#ifnoteq PricePromotion 0}}
+                        <span style="color: gray;position:relative;bottom:13px;font-size:0.35cm"><s>{{format
+                                Price}}đ</s>
+                            &nbsp;
+                            {{PricePromotion}}% off</span>
+                        <span></span>
+                        {{/ifnoteq}}
+                    </div>
+                    {{#ifeq ../CurrentUser.role 'student'}}
+                    <div class="card-footer m-0 p-0 d-flex justify-content-between">
+                        {{#if ../Enrollment}}
+                        <button type="button" class="course-controller btn btn-outline-success btn-course "
+                            id="btn_learn">
+                            <i class="fas fa-play fa-fw"></i>
+                        </button>
+                        {{#if ../Favorite}}
+                        {{!-- <input type="text" value="Remove favorite that has wl_ID = {{../Favorite.wl_ID}}, 
+                            CourseID={{../Favorite.CourseID}} and s_ID={{../Favorite.s_ID}}"> --}}
+                        <button type="submit" class="course-controller btn btn-outline-danger btn-course"
+                            id="btn_remFav" data-wl_ID="{{../Favorite.wl_ID}}">
+                            <i style="" class="fa fa-heart fa-fw"></i>
+                        </button>
+                        {{else}}
+                        {{!-- <input type="text" value="Add favorite that has  
+                            CourseID={{CourseID}} and s_ID={{../CurrentUser.s_ID}}"> --}}
+                        <button type="submit" class="course-controller btn btn-outline-danger btn-course"
+                            id="btn_addFav" data-CourseID="{{CourseID}}" data-s_ID="{{../CurrentUser.s_ID}}">
+                            <i style="" class="fa fa-heart-o fa-fw"></i>
+                        </button>
+                        {{/if}}
+                        {{else}}
+                        <button type="submit" class="course-controller btn btn-outline-success btn-course" id="btn_buy">
+                            <i class="fas fa-shopping-cart fa-fw"></i>
+                        </button>
+                        {{/if}}
+
+                    </div>
+                    {{/ifeq}}
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row justify-content-center top-buffer ">
+        <div class="col col-lg-10 shadow-top">
+            <h3>Description</h4>
+                {{{FullDes}}}
+        </div>
+        <div class="col col-lg-10 top-buffer shadow-top">
+            <h3>Course Content</h3>
+            <p style="position: relative; top:10px">{{../CourseChapters.length}}
+                section{{#ifnoteq ../CourseChapters.length 1}}<span>s</span>{{/ifnoteq}}</p>
+            {{#each ../CourseChapters}}
+            <div class="row" style="width:80%;border: 2px solid rgba(128, 128, 128, 0.705);border-radius:10px">
+                <div class="col-sm-6 mb-1">
+                    <h5>{{ChapterName}} </h5>
+                </div>
+                <div class="col-sm-6 mb-1">
+                    {{#if @first}}
+                    <p style="text-align:center">
+                        <a href="#collapse_preview" class="text-primary" data-toggle="collapse" role="button"
+                            style="text-decoration: underline;opacity:0.6">
+                            Preview
+                        </a>
+                    </p>
+                    <div class="collapse" id="collapse_preview">
+                        <video style="max-width:100%;" class="video-js" controls preload="auto" data-setup='{loop:true}'
+                            id="vid_preview">
+                            <source src="/public/videos/video{{ChapterID}}.mp4" type="video/mp4">
+                        </video>
+                    </div>
+
+                    {{/if}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+
+        <div class="col col-lg-10 top-buffer shadow-top">
+            <h3>Lecturers</h3>
+            {{#each ../CourseLecturers}}
+            <div>
+                {{#with details}}
+                <div id="lecturer{{../l_ID}}">
+                    <div class="ml-3"
+                        style="text-decoration:underline; font-weight:bold;font-size:large; color:#0F7C90">{{l_Name}}
+                    </div>
+                    <div class="row" style="color:BE5A0E">
+                        <div class="col-md-2">
+                            <img width="100%" src="/public/images/lecturer.webp" alt="">
+                        </div>
+                        <div class="col-md-4 mt-3">
+                            <div>
+                                <i class="fas fa-briefcase fa-fw" style="color:#BE5A0E"></i>
+                                {{l_Occupation}}
+                            </div>
+                            <div>
+                                <i class="fas fa-birthday-cake fa-fw" style="color:#BE5A0E"></i>
+                                {{l_DOB}}
+                            </div>
+                            <div>
+                                <i class="fas fa-envelope fa-fw" style="color:#BE5A0E"></i>
+                                {{l_Email}}
+                            </div>
+                            <div>
+                                <i class="fas fa-user-friends fa-fw" style="color:#BE5A0E"></i>
+                                {{l_TotalStudents}} students
+                            </div>
+                            <div>
+                                <i class="fas fa-play-circle fa-fw" style="color:#BE5A0E"></i>
+                                {{l_TotalCourses}} courses
+                            </div>
+                        </div>
+                        <div class="col-6 h-25"
+                            style="margin-left:-20px;border:1px solid gray;border-radius:5px;min-height:200px;max-height:200px;overflow:auto;color:black">
+                            <strong>Biography</strong>
+                            {{{l_Description}}}
+
+                        </div>
+                    </div>
+                </div>
+                {{/with}}
+            </div>
+            {{/each}}
+
+        </div>
+
+        <div class="col col-lg-10 top-buffer shadow-top">
+            <h3>Student feedback</h3>
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <p class="rate-heading" style="color:#BE5A0E">{{Rate}}</p>
+                            <div style="margin-top:-20px;">
+                                <div class="stars-outer" style="margin-left:3px">
+                                    <div class="stars-inner" data-value="{{Rate}}"></div>
+                                </div>
+                                <h5 style="color:#BE5A0E">Course rating</h5>
+                            </div>
+                        </div>
+                        <div class="col-sm-7 d-flex flex-column-reverse">
+                            {{#each ../RateStat}}
+                            <div class="d-flex justify-content-between mt-2">
+                                <div class="progress d-flex" style="width:100%;border:1px solid black;">
+                                    <div class="progress-bar bg-dark progress-bar-striped progress-bar-animated"
+                                        role="progressbar" style="width: {{this}}%">{{this}}%</div>
+                                </div>
+                                <span class="d-flex" style="font-weight:bold;margin:-5px 0 0 15px;color:#be5a0e">{{add
+                                    @index 1}}
+                                    <i class="fas fa-star fa-fw fa-sm" style="margin-top:5px;"></i>
+                                </span>
+                            </div>
+                            {{/each}}
+                        </div>
+
+
+                    </div>
+
+                    {{#with ../Enrollment}}
+                    <form method="POST" action="/student/feedback" id="f_feedback"
+                        style="margin-top:10px;border: 1px solid gray;border-radius:5px;background-color:black;color:white">
+                        <h4>Your review</h4>
+                        <input type="hidden" value="{{EnrollID}}" name="enrollid">
+                        <div class="star-widget">
+                            <input type="radio" name="star" id="rate-5" value="5">
+                            <label for="rate-5"></label>
+                            <input type="radio" name="star" id="rate-4" value="4">
+                            <label for="rate-4"></label>
+                            <input type="radio" name="star" id="rate-3" value="3">
+                            <label for="rate-3"></label>
+                            <input type="radio" name="star" id="rate-2" value="2">
+                            <label for="rate-2"></label>
+                            <input type="radio" name="star" id="rate-1" value="1">
+                            <label for="rate-1"></label>
+                            <header></header>
+                            <textarea name="comment" id="ta_comment"
+                                placeholder="Describe your experience..."></textarea>
+                            <button type="submit" id="btn_feedback" class="btn btn-outline-success">
+                                <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </form>
+                    {{/with}}
+
+                </div>
+                <div class="col-md-7 ml-5" style="overflow:auto;max-height:500px;padding-right:30px">
+                    {{#each ../StudentFeedback}}
+                    <div class="row mt-2 mb-2"
+                        style="border-bottom: 1px solid gray;box-shadow: 8px 8px 6px -6px black;border-radius:15px">
+                        <div class="col-sm-1 mt-2">
+                            <img width="50px" height="50px" src="/public/images/student.png" alt="">
+                        </div>
+                        <div class="col-sm-10 ml-3">
+                            <p><strong style="font-size: 0.6cm">{{s_Name}}</strong></p>
+                            <div class="stars-outer ml-1" style="style: relative; bottom:15px;">
+                                <div class="stars-inner" data-value="{{Rate}}"></div>
+                            </div>
+                            <p style="margin-top:-10px">{{Comment}}</p>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+        <div class="col col-lg-10 top-buffer mb-5 shadow-top">
+            <h3>Students also bought</h3>
+            <input type="hidden" id="recID" value="">
+            {{#each ../FiveRelevants}}
+            <a role="button" class="row mb-2 recommendation" href="/course/{{CourseID}}">
+                <div class="col-sm-2">
+                    <img class="card-img-top card-img-bottom center" src="/public/images/{{CourseID}}.jpg"
+                        alt="{{CourseName}}" onerror='this.onerror = null; this.src="/public/images/{{CourseID}}.jpeg"'>
+                </div>
+                <div class="col-sm-5">
+                    <h5 class="card-title" style="font-weight:700">{{CourseName}}</h5>
+                    <p>
+                        <i class="fas fa-exclamation-circle fa-fw"></i>
+                        <small style="position: relative; bottom: 1px">Last update: {{LastUpdate}}</small>
+                    </p>
+                </div>
+                <div class="col-sm-2" style="color:#BE5A0E">
+                    <strong>{{Rate}}</strong>
+                    <i class="fas fa-star fa-fw" {{#ifeq Rate null}}style="color:gray" {{/ifeq}}></i>
+                </div>
+
+                <div class="col-sm-1">
+                    <i class="fas fa-user-friends fa-fw" style="opacity:0.5"></i>
+                    {{TotalStudents}}
+                </div>
+                <div class="col-sm-1">
+                    <p style="font-weight: bold;font-size:0.5cm"> {{format CurrentPrice}}đ</p>
+
+                    {{#ifnoteq PricePromotion 0}}
+                    <s style="opacity:0.5;position:relative;top:-20px;">
+                        {{format Price}}đ
+                    </s>
+
+                    {{/ifnoteq}}
+                </div>
+
+
+            </a>
+            {{/each}}
+        </div>
+        {{/with}}
+    </div>
+</div>
+
+{{#section 'js'}}
+<script>
+
+
+    $( '#btn_buy' ).click( function ()
+    {
+        //lấy courseid
+        const CourseID = $( '#hid_courseid' ).val();
+        $( '#hid_buy' ).val( CourseID );
+        $( '#f_buy' ).submit();
+    } );
+    $( '#btn_learn' ).click( function ()
+    {
+        const CourseID = $( '#hid_courseid' ).val();
+        window.location.href = `/student/learn?id=${ CourseID }`;
+    } );
+    $( '#btn_remFav' ).click( function ()
+    {
+        const wl_ID = $( this ).attr( "data-wl_ID" );
+
+        $( '#hid_rem_wl_ID' ).val( wl_ID );
+        alert( $( '#hid_rem_wl_ID' ).val() );
+        $( '#f_remFav' ).submit();
+    } );
+    $( '#btn_addFav' ).click( function ()
+    {
+        const CourseID = $( this ).attr( "data-CourseID" ),
+            s_ID = $( this ).attr( "data-s_ID" );
+        //alert( ` CourseID = ${ CourseID } s_ID = ${ s_ID }` );
+        $( '#hid_add_CourseID' ).val( CourseID );
+        $( '#hid_add_s_ID' ).val( s_ID );
+        $( '#f_addFav' ).submit();
+    } )
+</script>
+
+{{/section}}
+
+{{#section 'css'}}
+<style>
+    a {
+        color: black;
+    }
+
+    a:hover {
+        color: rgba(25, 177, 223, 0.705);
+        text-decoration: none;
+    }
+
+    .recommendation:hover {
+
+        position: relative;
+        bottom: 2px;
+        cursor: pointer;
+        box-shadow: 2px 2px 2px 2px black;
+    }
+
+    .recommendation {
+        min-height: 100px;
+        width: 95%;
+        border: 1px solid gray;
+        border-radius: 3px
+    }
+
+    .shadow-top {
+        margin-bottom: 5px;
+        box-shadow: 8px -8px 6px -6px black
+    }
+
+    .text-category {
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        font-weight: 800
+    }
+
+    .text-price {
+        font-family: sf pro display, -apple-system, BlinkMacSystemFont, Roboto, segoe ui, Helvetica, Arial, sans-serif, apple color emoji, segoe ui emoji, segoe ui symbol;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: -.02rem;
+        font-size: 2.2rem;
+        color: #3c3b37;
+    }
+
+    .text-name {
+        font-size: xx-large;
+        font-weight: 700;
+    }
+
+    .text-tinydes {
+        font-size: large
+    }
+
+    .rate-heading {
+        font-family: sf pro display, -apple-system, BlinkMacSystemFont, Roboto, segoe ui, Helvetica, Arial, sans-serif, apple color emoji, segoe ui emoji, segoe ui symbol;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: -.02rem;
+        font-size: 4rem;
+    }
+
+
+    .text-rate {
+        font-weight: bold;
+        color: #f8ce0b;
+    }
+
+    .text-creator {
+        text-decoration: underline;
+    }
+
+    .jumbotron {
+        padding: 2rem 4rem 2rem 4rem;
+        margin: 0px 0 10px 0;
+    }
+
+    .course-controller {
+        flex: 1 1 auto;
+        margin: 5px;
+        border: 3px solid;
+    }
+
+    .star-widget input {
+        display: none;
+    }
+
+    .star-widget {
+        display: flex;
+        justify-content: center;
+        flex-direction: row-reverse;
+        flex-wrap: wrap
+    }
+
+    .star-widget label::before {
+        content: '\f005';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        font-size: large;
+    }
+
+    .star-widget input:not(:checked)~label:hover,
+    .star-widget input:not(:checked)~label:hover~label {
+        color: #fd4
+    }
+
+    .star-widget input:checked~label {
+        color: #fd4
+    }
+
+
+    .star-widget input:checked~header::before {
+        content: 'Thank you for rating us!';
+        flex-shrink: 0;
+    }
+
+    .star-widget input:checked~textarea {
+        display: block;
+    }
+
+    .star-widget input:checked~button {
+        display: block;
+    }
+
+    .star-widget header {
+        margin-top: -10px;
+    }
+
+    .star-widget textarea {
+        max-height: 100px;
+        width: 90%;
+        overflow: auto;
+        display: none;
+        margin-bottom: 10px;
+        outline: none;
+    }
+
+    .star-widget button {
+        display: none;
+        margin: 10px;
+    }
+
+</style>
+<link rel="stylesheet" href="/public/stylesheets/courses.css">
+
+{{/section}}
